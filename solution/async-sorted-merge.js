@@ -7,7 +7,10 @@ module.exports = async (logSources, printer) => {
   const logQueue = new MinPriorityQueue((log) => log.date);
 
   const Promises = logSources.map(async (logSource) => {
-    return logQueue.enqueue(await logSource.popAsync());
+    const logEntry = await logSource.popAsync();
+    if (logEntry !== false) {
+      logQueue.enqueue(await logSource.popAsync());
+    }
   });
   await Promise.all(Promises); // n log(n)
 

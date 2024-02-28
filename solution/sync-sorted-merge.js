@@ -8,7 +8,9 @@ module.exports = (logSources, printer) => {
 
   logSources.forEach((logSource) => {
     const logEntry = logSource.pop();
-    logQueue.enqueue(logEntry);
+    if (logEntry !== false) {
+      logQueue.enqueue(logEntry);
+    }
   }); // n log(n)
 
   while (logQueue.size() > 0) {
