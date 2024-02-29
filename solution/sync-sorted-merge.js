@@ -1,24 +1,48 @@
 'use strict';
 
+const { catchPhrase } = require('Faker/lib/company');
+
 // Print all entries, across all of the sources, in chronological order.
 
 module.exports = (logSources, printer) => {
   const { MinPriorityQueue } = require('@datastructures-js/priority-queue');
-  const logQueue = new MinPriorityQueue((log) => log.date);
+  const logQueue = new MinPriorityQueue((item) => item.logEntry.date);
 
-  logSources.forEach((logSource) => {
-    const logEntry = logSource.pop();
-    if (logEntry !== false) {
-      logQueue.enqueue(logEntry);
-    }
-  }); // n log(n)
+  for (let i = 0; i < logSources.length; i++)
+    logSources.forEach((logSource) => {
+      const logEntry = logSource.pop();
+
+      queueToHeap(logEntry, i, logQueue);
+    }); // O(n log(m)) | n = logSources.length, m = logEntries.length
 
   while (logQueue.size() > 0) {
-    const logEntry = logQueue.dequeue();
-    printer.print(logEntry);
-  } // n log(n)
+    const queueItem = logQueue.dequeue();
+    printer.print(queueItem.logEntry);
+
+    const { index } = queueItem;
+    const logEntry = logSources[index].pop();
+    queueToHeap(logEntry, index, logQueue);
+  } // O(n log(m)) | n = logSources.length, m = logEntries.length
 
   printer.done();
 
   return console.log('Sync sort complete.');
 };
+// Time: O(n log(m)) | n = logSources.length, m = logEntries.length
+// Space: O(m) | m = logEntries.length
+
+/**
+ * Queue to Priority Queue if logEntry is not drained
+ * @param {{date: DateTime, msg: string}|boolean} logEntry
+ * @param {number} index
+ * @param {MinPriorityQueue} heap
+ */
+function queueToHeap(logEntry, index, heap) {
+  if (logEntry !== false) {
+    const queueItem = {
+      logEntry,
+      index,
+    };
+    heap.enqueue(queueItem);
+  }
+}
