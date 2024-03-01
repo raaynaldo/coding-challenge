@@ -8,12 +8,10 @@ module.exports = (logSources, printer) => {
   const { MinPriorityQueue } = require('@datastructures-js/priority-queue');
   const logQueue = new MinPriorityQueue((item) => item.logEntry.date);
 
-  for (let i = 0; i < logSources.length; i++)
-    logSources.forEach((logSource) => {
-      const logEntry = logSource.pop();
-
-      queueToHeap(logEntry, i, logQueue);
-    }); // O(n log(m)) | n = logSources.length, m = logEntries.length
+  for (let i = 0; i < logSources.length; i++) {
+    const logEntry = logSources[i].pop();
+    queueToHeap(logEntry, i, logQueue);
+  } // O(n log(m)) | n = logSources.length, m = logEntries.length
 
   while (logQueue.size() > 0) {
     const queueItem = logQueue.dequeue();
