@@ -6,9 +6,9 @@ module.exports = async (logSources, printer) => {
   const { MinPriorityQueue } = require('@datastructures-js/priority-queue');
   const logQueue = new MinPriorityQueue((item) => item.logEntry.date);
 
-  const promises = [];
+  const promises = new Array(logSources.length);
   for (let i = 0; i < logSources.length; i++) {
-    promises.push(await queueToHeap(logSources, i, logQueue));
+    promises[i] = queueToHeap(logSources, i, logQueue);
   }
   await Promise.all(promises); // O(n log(m)) | n = logSources.length, m = logEntries.length
 
