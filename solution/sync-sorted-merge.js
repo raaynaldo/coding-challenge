@@ -1,7 +1,5 @@
 'use strict';
 
-const { catchPhrase } = require('Faker/lib/company');
-
 // Print all entries, across all of the sources, in chronological order.
 
 module.exports = (logSources, printer) => {
